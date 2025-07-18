@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAFOLIO 2025</title>
+    <!-- Favicon con el diseño del cursor de cruz -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2cCB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8cmVjdCB4PSIwIiB5PSIxNSIgd2lkdGg9IjMyIiBoZWlnaHQ9IjIiIGZpbGw9IiM2NjYiLz4KICA8cmVjdCB4PSIxNSIgYnkiPSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIzMiIgZmlsbD0iIzY2NiIvPgKPC9zdmc+">
+    <!-- Carga de Tailwind CSS para estilos rápidos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importación de la fuente Outfit desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Configuración de la fuente Outfit como principal y Inter como respaldo */
+        body {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            cursor: none; /* Oculta el cursor predeterminado para usar el personalizado */
+            overflow-x: hidden; /* Asegura que no haya scroll horizontal en el body */
+        }
+
+        /* Estilos generales para los contenedores de palabras con efecto */
+        .glitch-word-wrapper {
+            position: relative;
+            height: 2.25rem; /* Altura basada en text-3xl de Tailwind */
+            width: fit-content; /* Asegura que el div no ocupe todo el ancho */
+            white-space: nowrap;
+            cursor: pointer;
+            margin-bottom: 0rem; /* Margen inferior para separar las líneas de texto (reducido a 0) */
+            z-index: 10; /* Asegura que esté por encima del GIF */
+        }
+
+        /* Estilos para las palabras original y de hover dentro de los wrappers */
+        .glitch-word-wrapper .original-text,
+        .glitch-word-wrapper .hover-text {
+            position: absolute;
+            top: 0;
+            right: 0; /* Alinea a la derecha del contenedor relativo */
+            left: auto; /* Desactiva la alineación a la izquierda */
+            text-align: right; /* Alinea el texto dentro del span a la derecha */
+            /* La opacidad se controla con JS, pero mantenemos una transición base */
+            transition: opacity 0.1s ease-in-out, color 0.3s ease-in-out; /* Transición para color */
+        }
+
+
+        /* La palabra de hover inicialmente está oculta */
+        .glitch-word-wrapper .hover-text {
+            opacity: 0;
+            pointer-events: none; /* No captura eventos cuando está oculta */
+        }
+
+        /* La palabra original inicialmente está visible */
+        .glitch-word-wrapper .original-text {
+            opacity: 1;
+            pointer-events: auto; /* Captura eventos cuando está visible */
+        }
+
+        /* Estilos para cada carácter individual dentro de la palabra de hover */
+        .glitch-word-wrapper .hover-text .char {
+            opacity: 0; /* Inicialmente ocultos */
+            display: inline-block; /* Para que cada span ocupe su propio espacio */
+            transition: opacity 0.05s ease-in-out, color 0.15s ease-out; /* Transición para revelado y color */
+        }
+
+        /* Clase para el efecto de flash blanco */
+        .flash-white {
+            color: white !important; /* Fuerza el color blanco */
+        }
+
+        /* Nuevos estilos para el texto HOLA y el efecto de máquina de escribir */
+        #typing-text {
+            white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+        }
+
+        .blinking-cursor {
+            opacity: 1;
+            animation: blink 0.7s step-end infinite; /* Animación de parpadeo para el cursor */
+            font-weight: normal; /* Asegura que el cursor no herede el font-thin */
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Clase para el estado inicial oculto y la transición para la animación al scroll */
+        .slide-fade-in-on-scroll {
+            transform: translateY(20px); /* Empieza ligeramente debajo */
+            opacity: 0; /* Empieza invisible */
+            transition: transform 1s ease-out, opacity 1s ease-out; /* Transición para ambos */
+        }
+
+        /* Clase que se añade cuando el elemento es visible en el viewport */
+        .is-visible {
+            transform: translateY(0); /* Vuelve a la posición original */
+            opacity: 1; /* Se hace visible */
+        }
+
+        /* Estilos para el cursor personalizado (cross-pointer) */
+        #custom-cursor {
+            position: fixed;
+            width: 20px; /* Tamaño de la cruz */
+            height: 20px; /* Tamaño de la cruz */
+            pointer-events: none; /* Permite hacer clic en los elementos de abajo */
+            z-index: 9999; /* Asegura que esté por encima de todo */
+            transform: translate(-50%, -50%); /* Centra la cruz en el cursor */
+            transition: transform 0.05s linear; /* Transición suave para el movimiento */
+        }
+
+        #custom-cursor::before,
+        #custom-cursor::after {
+            content: '';
+            position: absolute;
+            background-color: #666; /* Color gris oscuro */
+        }
+
+        #custom-cursor::before { /* Línea horizontal */
+            width: 100%;
+            height: 2px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        #custom-cursor::after { /* Línea vertical */
+            width: 2px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Estilos para las líneas de guía */
+        .guide-line {
+            position: absolute;
+            background-color: #666; /* Gris oscuro */
+            opacity: 0; /* Inicialmente invisible */
+            transition: opacity 1s ease-out; /* Transición para la opacidad */
+            z-index: -2; /* Detrás del texto */
+        }
+
+        #horizontal-guide-line {
+            height: 1px;
+            width: 0; /* Inicialmente sin ancho */
+            transition: width 1s ease-out, opacity 1s ease-out; /* Transición para ancho y opacidad */
+        }
+
+        #vertical-guide-line {
+            width: 1px;
+            height: 0; /* Inicialmente sin altura */
+            transition: height 1s ease-out, opacity 1s ease-out; /* Transición para altura y opacidad */
+        }
+
+        /* Nueva línea vertical desde la foto de perfil */
+        #profile-to-image-line {
+            width: 1px; /* Línea vertical delgada */
+            height: 0; /* Inicialmente sin altura */
+            transition: height 1s ease-out, opacity 1s ease-out; /* Transición para altura y opacidad */
+        }
+
+        /* Nueva línea horizontal desde "EFFECTS" */
+        #effects-guide-line {
+            height: 1px;
+            width: 0; /* Inicialmente sin ancho */
+            transition: width 1s ease-out, opacity 1s ease-out; /* Transición para ancho y opacidad */
+        }
+
+        #illustration-underline-line {
+            height: 1px;
+            width: 0;
+            transition: width 1s ease-out, opacity 1s ease-out;
+        }
+
+        #illustration-vertical-guide-line {
+            width: 1px;
+            height: 0;
+            transition: height 1s ease-out, opacity 1s ease-out;
+        }
+
+        /* Clase para activar el "dibujado" de las líneas */
+        .guide-line.is-drawn {
+            opacity: 1;
+        }
+
+        #horizontal-guide-line.is-drawn {
+            width: 100%; /* Crece a lo largo */
+        }
+
+        #vertical-guide-line.is-drawn {
+            height: var(--vertical-line-height); /* Crece a la altura calculada */
+        }
+
+        #profile-to-image-line.is-drawn {
+            height: var(--profile-line-height); /* Crece a la altura calculada */
+        }
+
+        #effects-guide-line.is-drawn {
+            width: var(--effects-line-width); /* Crece a la altura calculada */
+        }
+
+        #illustration-underline-line.is-drawn {
+            width: var(--illustration-underline-width);
+        }
+
+        #illustration-vertical-guide-line.is-drawn {
+            height: var(--illustration-vertical-height);
+        }
+
+        /* Estilos para el círculo degradado */
+        .gradient-circle {
+            position: fixed; /* Cambiado a fixed para seguir el cursor en toda ventana */
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle at top left, #333, #000); /* Degradado de gris oscuro a negro */
+            z-index: -1; /* Asegura que esté detrás del texto */
+            opacity: 0.8; /* Ligeramente transparente */
+            filter: blur(50px); /* Desenfoque para un efecto suave */
+            pointer-events: none; /* No interfiere con los clic del ratón */
+            transform: translate(-50%, -50%); /* Centra el círculo en el cursor */
+            transition: transform 0.05s linear; /* Transición suave para el movimiento */
+        }
+
+        /* Estilos para el GIF que sigue al cursor en el h1 */
+        #gif-follower {
+            position: fixed;
+            width: 640px; /* Tamaño del GIF: 640px de ancho */
+            height: 360px; /* Tamaño del GIF: 360px de alto */
+            pointer-events: none; /* Permite hacer clic en los elementos de abajo */
+            z-index: 8; /* Cambiado a 8 para que quede detrás del texto (z-index: 10) */
+            opacity: 0; /* Inicialmente invisible */
+            transform: translate(-50%, -50%) scale(0); /* Centrado y escalado a 0 */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Animación de escala y opacidad */
+        }
+        #gif-follower iframe {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Asegura que el GIF se ajuste sin distorsión */
+        }
+
+        /* Estilos para el nuevo círculo verde de fondo */
+        #green-background-circle {
+            position: absolute;
+            width: 600px; /* Tamaño del círculo */
+            height: 600px; /* Tamaño del círculo */
+            background-color: #00FF00; /* Color verde */
+            border-radius: 50%; /* Hace que sea un círculo */
+            filter: blur(80px); /* Efecto de desenfoque */
+            opacity: 0; /* Transparencia total */
+            z-index: 9; /* Asegura que esté por encima de space-below-portfolio */
+            top: 50%; /* Centrado verticalmente */
+            left: 50%; /* Centrado horizontalmente */
+            transform: translate(-50%, -50%); /* Ajuste para centrarlo perfectamente */
+            pointer-events: auto; /* Permite que capture eventos de ratón */
+        }
+
+        /* Estilos para la galería de imágenes */
+        /* Ajuste para 3 columnas en pantallas grandes para la nueva sección */
+        .gallery-grid-section-3-cols {
+            grid-auto-rows: 1fr; /* Cada fila tendrá la misma altura */
+            grid-auto-flow: dense; /* Permite que los elementos llenen los espacios vacíos */
+            gap: 10px; /* Ajustado a 10px */
+        }
+
+        /* Definición de la ocupación de celdas para los elementos de la grilla en pantallas grandes */
+        @media (min-width: 1024px) { /* Aplica solo en pantallas grandes (lg y superior) */
+            .gallery-grid-section {
+                grid-template-columns: repeat(4, 1fr); /* 4 columnas en pantallas grandes */
+            }
+            .gallery-grid-section .item-1 {
+                grid-column: span 2; /* Ocupa 2 columnas */
+                grid-row: span 2;    /* Ocupa 2 filas */
+            }
+            .gallery-grid-section .item-4 {
+                grid-column: span 1; /* Ocupa 1 columna */
+                grid-row: span 2;    /* Ocupa 2 filas */
+            }
+            .gallery-grid-section-3-cols {
+                grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas grandes */
+            }
+        }
+
+        /* Ajustes para pantallas medianas (tablet) */
+        @media (min-width: 640px) and (max-width: 1023px) {
+            .gallery-grid-section {
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablet */
+            }
+            .gallery-grid-section .item-1,
+            .gallery-grid-section .item-2,
+            .gallery-grid-section .item-3,
+            .gallery-grid-section .item-4 {
+                grid-column: span 1; /* Todos los elementos ocupan 1 columna */
+                grid-row: span 1;    /* Todos los elementos ocupan 1 fila */
+            }
+            .gallery-grid-section-3-cols {
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablet */
+            }
+        }
+
+        /* Ajustes para pantallas pequeñas (móvil) */
+        @media (max-width: 639px) {
+            .gallery-grid-section {
+                grid-template-columns: repeat(1, 1fr); /* 1 columna en móvil */
+            }
+            .gallery-grid-section .item-1,
+            .gallery-grid-section .item-2,
+            .gallery-grid-section .item-3,
+            .gallery-grid-section .item-4 {
+                grid-column: span 1; /* Todos los elementos ocupan 1 columna */
+                grid-row: span 1;    /* Todos los elementos ocupan 1 fila */
+            }
+            .gallery-grid-section-3-cols {
+                grid-template-columns: repeat(1, 1fr); /* 1 columna en móvil */
+            }
+        }
+
+        /* Middle Section - Wide Rectangles */
+        .gallery-middle-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Ajustado a 10px */
+            width: 100%; /* Default to full width */
+        }
+        .gallery-middle-section .item-wide-rectangle {
+            width: 100%; /* Full width on all screens */
+            height: 400px; /* Consistent height for wide rectangles - AUMENTADO A 400PX */
+        }
+
+        /* Common styles for gallery items */
+        .gallery-item, .item-wide-rectangle { /* Aplicado a ambos tipos de elementos de galería */
+            background-color: #333; /* Dark gray background for placeholders */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: bold;
+            overflow: hidden;
+            /* Animación de entrada */
+            opacity: 0; /* Inicialmente invisible */
+            transform: translateY(20px); /* Ligeramente debajo */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Transición suave */
+        }
+        .gallery-item img, .item-wide-rectangle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures images cover the area */
+        }
+
+        /* Clase para activar la animación de entrada de la galería */
+        .is-visible-gallery {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Nueva clase para relación de aspecto 4:5 (vertical) */
+        .aspect-vertical {
+            aspect-ratio: 4 / 5; /* 4:5 aspect ratio */
+        }
+
+        /* Estilos para los enlaces sociales */
+        .social-link {
+            transition: color 0.3s ease-in-out; /* Transición para el color */
+            text-transform: uppercase; /* Asegura que el texto esté en mayúsculas */
+        }
+        .social-separator {
+            transition: color 0.3s ease-in-out; /* Transición para el color */
+        }
+    </style>
+</head>
+<body class="bg-black text-[#ccc] min-h-screen flex flex-col">
+    <!-- Cursor personalizado (cross-pointer) -->
+    <div id="custom-cursor"></div>
+
+    <!-- Círculo degradado que seguirá al cursor -->
+    <div class="gradient-circle" id="hola-circle"></div>
+
+    <!-- GIF que seguirá al cursor sobre el h1 -->
+    <div id="gif-follower">
+        <iframe src="https://giphy.com/embed/TIo371BZyQYfJ4nUh4/video" width="100%" height="100%" frameborder="0" class="giphy-embed" allowfullscreen></iframe>
+    </div>
+
+    <!-- Contenedor principal de la página -->
+    <div class="container mx-auto p-4 md:p-8 lg:p-12 w-full relative"> <!-- Added relative here for guide lines -->
+        <!-- Nombre "NICOLÁS PLAZA CONTRERAS" estático, alineado a la izquierda -->
+        <p class="text-left text-xl md:text-2xl lg:text-3xl font-semibold text-[#ccc] mb-0 relative z-10">
+            NICOLÁS PLAZA CONTRERAS
+        </p>
+
+        <!-- Nuevo contenedor para el área interactiva superior -->
+        <div id="top-section-interactive-area" class="relative">
+            <!-- Círculo verde de fondo -->
+            <div id="green-background-circle"></div>
+
+            <!-- Título principal "PORTAFOLIO 2025" en grande y alineado a la izquierda -->
+            <!-- Añadido z-10 para asegurar que el h1 esté por encima del gif-follower y pueda detectar el hover -->
+            <h1 class="text-left text-[90pt] lg:text-[100pt] font-thin mb-0 leading-none text-[#ccc] relative z-10" id="portfolio-title">
+                <span class="font-bold block lg:inline">PORTA</span><span class="font-bold block lg:inline">FOLIO</span> <span class="font-thin mt-[-0.5rem] inline-block">2025</span>
+            </h1>
+
+            <!-- Nuevo clip de Giphy estático para celulares, oculto en tabletas y escritorio -->
+            <div class="block sm:hidden md:hidden lg:hidden w-full aspect-video mt-4">
+                <iframe src="https://giphy.com/embed/TIo371BZyQYfJ4nUh4/video" width="100%" height="100%" frameborder="0" class="giphy-embed" allowfullscreen></iframe>
+            </div>
+
+            <!-- Nuevo espacio negativo entre PORTAFOLIO y las palabras clave -->
+            <!-- Este div ahora no bloquea los eventos del ratón -->
+            <div id="space-below-portfolio" class="hidden lg:block w-full h-32 bg-transparent pointer-events-none"></div>
+
+            <!-- Contenedor para las palabras clave, cada una en su propia línea y en mayúscula -->
+            <!-- Eliminado mt-8 ya que el espacio ahora es manejado por space-below-portfolio -->
+            <div class="hidden lg:flex flex-col items-end text-xl md:text-2xl lg:text-3xl font-semibold p-2" id="glitch-words-container">
+                <!-- Contenedor para la palabra 'imagen' con el efecto -->
+                <div class="glitch-word-wrapper glitch-word-wrapper-imagen">
+                    <span class="original-text">IMAGEN</span>
+                    <span class="hover-text" aria-hidden="true">
+                        <span class="char">D</span><span class="char">I</span><span class="char">S</span><span class="char">E</span><span class="char">Ñ</span><span class="char">O</span><span class="char">&nbsp;</span><span class="char">G</span><span class="char">R</span><span class="char">Á</span><span class="char">F</span><span class="char">I</span><span class="char">C</span><span class="char">O</span>
+                    </span>
+                </div>
+                <!-- Contenedor para la palabra 'movimiento' con el efecto -->
+                <div class="glitch-word-wrapper glitch-word-wrapper-movimiento">
+                    <span class="original-text">MOVIMIENTO</span>
+                    <span class="hover-text" aria-hidden="true">
+                        <span class="char">A</span><span class="char">N</span><span class="char">I</span><span class="char">M</span><span class="char">A</span><span class="char">C</span><span class="char">I</span><span class="char">Ó</span><span class="char">N</span><span class="char">&nbsp;</span><span class="char">E</span><span class="char">N</span><span class="char">&nbsp;</span><span class="char">A</span><span class="char">F</span><span class="char">T</span><span class="char">E</span><span class="char">R</span><span class="char">&nbsp;</span><span class="char">E</span><span class="char">F</span><span class="char">F</span><span class="char">E</span><span class="char">C</span><span class="char">T</span><span class="char">S</span>
+                    </span>
+                </div>
+                <!-- Contenedor para la palabra 'estilo' con el efecto -->
+                <div class="glitch-word-wrapper glitch-word-wrapper-estilo">
+                    <span class="original-text">ESTILO</span>
+                    <span class="hover-text" aria-hidden="true">
+                        <span class="char">I</span><span class="char">L</span><span class="char">U</span><span class="char">S</span><span class="char">T</span><span class="char">R</span><span class="char">A</span><span class="char">C</span><span class="char">I</span><span class="char">Ó</span><span class="char">N</span><span class="char">&nbsp;</span><span class="char">D</span><span class="char">I</span><span class="char">G</span><span class="char">I</span><span class="char">T</span><span class="char">A</span><span class="char">L</span>
+                </span>
+                </div>
+            </div>
+
+            <!-- Nuevo espacio negativo entre PORTAFOLIO y las palabras clave -->
+            <!-- Este div ahora no bloquea los eventos del ratón -->
+            <div id="space-below-words" class="hidden lg:block w-full h-64 bg-transparent"></div>
+
+            <!-- Texto "HOLA" con efecto de máquina de escribir y cambio de idioma -->
+            <p class="text-left text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-[100pt] font-thin text-[#444] leading-none relative z-10" id="hola-text-container">
+                <span id="typing-text"></span><span id="typing-cursor" class="blinking-cursor">|</span>
+            </p>
+        </div> <!-- Fin de top-section-interactive-area -->
+
+        <!-- Contenedor para la foto de perfil y el párrafo de descripción -->
+        <!-- Cambiado a justify-between para alinear la imagen a la izquierda y el texto a la derecha -->
+        <div class="flex flex-col md:flex-row items-center md:items-start justify-between mt-16 gap-8">
+            <!-- Image container (foto de perfil) -->
+            <!-- Tamaño fijo w-40 h-40 (160px) aplicado directamente con Tailwind -->
+            <div id="profile-image-container" class="rounded-full overflow-hidden flex-shrink-0 w-40 h-40">
+                <!-- URL de la imagen actualizada y filtro grayscale aplicado -->
+                <img src="https://media.licdn.com/dms/image/v2/D4E03AQFWUfbiYUDyIQ/profile-displayphoto-shrink_800_800/B4EZbSDYWhHIAc-/0/1747280824316?e=1758153600&v=beta&t=LFDhoPRhTA4u3JJHl1lyqWMqgDwTOl29fhDUNs4oMe4" alt="Imagen de Nicolás Plaza Contreras" class="w-full h-full object-cover filter grayscale">
+            </div>
+            <!-- Description paragraph -->
+            <div class="overflow-hidden max-w-2xl text-center md:text-right">
+                <p class="text-base md:text-lg lg:text-xl font-normal text-[#ccc] slide-fade-in-on-scroll" id="description-paragraph">
+                    Soy Nicolás Plaza Contreras, diseñador gráfico de 34 años. Trabajo con empresas y agencias que buscan transformar información en contenido visual que comunica y conecta.
+                </p>
+                <!-- Botón "Más" para expandir la descripción -->
+                <button id="read-more-button" class="mt-4 px-4 py-2 border border-[#ccc] text-[#ccc] uppercase font-light rounded-full transition-all duration-300 ease-in-out hover:bg-[#ccc] hover:text-[#333] text-sm md:text-base">
+                    Más
+                </button>
+                <!-- Párrafo adicional oculto inicialmente -->
+                <p id="hidden-description-paragraph" class="hidden text-base md:text-lg lg:text-xl font-normal text-[#ccc] mt-4">
+                    Actualmente resido en Viña del Mar, pero trabajo con clientes de todo Chile. Más de 10 años de experiencia trabajando con empresas y agencias creativas que buscan comunicar de manera efectiva mediante gráficas y movimiento.
+                </p>
+                <!-- Segundo párrafo adicional oculto inicialmente -->
+                <p id="hidden-description-paragraph-2" class="hidden text-base md:text-lg lg:text-xl font-normal text-[#ccc] mt-4">
+                    Revisa mi portafolio y piensa en el valor que podemos crear juntos.
+                </p>
+                <!-- Contenedor para los botones "Menos" y "Contáctame" -->
+                <div id="read-less-contact-container" class="hidden flex flex-col sm:flex-row justify-end items-center mt-4 gap-4">
+                    <!-- Botón "Contáctame" para hacer scroll a la sección de contacto -->
+                    <button id="contact-me-scroll-button" class="px-4 py-2 border border-[#ccc] text-[#ccc] uppercase font-light rounded-full transition-all duration-300 ease-in-out hover:bg-[#ccc] hover:text-[#333] text-sm md:text-base">
+                        Contáctame
+                    </button>
+                    <!-- Botón "Menos" para colapsar la descripción, oculto inicialmente -->
+                    <button id="read-less-button" class="px-4 py-2 border border-[#ccc] text-[#ccc] uppercase font-light rounded-full transition-all duration-300 ease-in-out hover:bg-[#ccc] hover:text-[#333] text-sm md:text-base">
+                        Menos
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Líneas de guía -->
+        <div id="horizontal-guide-line" class="guide-line"></div>
+        <div id="vertical-guide-line" class="guide-line"></div>
+        <!-- Nueva línea vertical desde la foto de perfil a la sección de imagen -->
+        <div id="profile-to-image-line" class="guide-line"></div>
+
+        <!-- Nuevo título "DISEÑO GRÁFICO" al final -->
+        <h1 class="text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#ccc] mt-16" id="design-graphic-title-bottom">
+            DISEÑO GRÁFICO
+        </h1>
+
+        <!-- Sección de la Galería -->
+        <section class="mt-16" id="design-graphic-gallery-section">
+            <!-- Top Section - Primer bloque de la grilla -->
+            <div class="gallery-grid-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="bg-gray-700 overflow-hidden item-1 gallery-item">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+1" alt="Trabajo 1" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden item-2 gallery-item">
+                    <img src="https://placehold.co/200x200/333/ccc?text=Trabajo+2" alt="Trabajo 2" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden item-4 gallery-item hidden lg:block">
+                    <img src="https://placehold.co/200x400/333/ccc?text=Trabajo+10" alt="Trabajo 10" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden item-3 gallery-item">
+                    <img src="https://placehold.co/200x200/333/ccc?text=Trabajo+3" alt="Trabajo 3" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Middle Section - Rectángulos anchos -->
+            <div class="gallery-middle-section mt-2.5">
+                <div class="bg-gray-700 overflow-hidden item-wide-rectangle hidden lg:flex" data-work-id="trabajo-6">
+                    <img src="https://placehold.co/800x200/333/ccc?text=Trabajo+6" alt="Trabajo 6" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden item-wide-rectangle hidden lg:flex">
+                    <img src="https://placehold.co/800x200/333/ccc?text=Trabajo+5" alt="Trabajo 5" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Frase "Diseño piezas que comunican con intención, claridad y personalidad." -->
+            <p class="text-center text-lg md:text-xl lg:text-2xl font-light text-[#ccc] mt-8 mb-8 slide-fade-in-on-scroll" id="communication-phrase">
+                Diseño piezas que comunican con intención, claridad y personalidad.
+            </p>
+
+            <!-- Bottom Section - Segundo bloque de la grilla (igual que el superior) -->
+            <div class="gallery-grid-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-2.5">
+                <div class="bg-gray-700 overflow-hidden item-1 gallery-item">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+7" alt="Trabajo 7" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden item-2 gallery-item">
+                    <img src="https://placehold.co/200x200/333/ccc?text=Trabajo+8" alt="Trabajo 8" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden item-4 gallery-item hidden lg:block">
+                    <img src="https://placehold.co/200x400/333/ccc?text=Trabajo+10" alt="Trabajo 10" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden item-3 gallery-item">
+                    <img src="https://placehold.co/200x200/333/ccc?text=Trabajo+9" alt="Trabajo 9" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+
+        <!-- Nueva sección: ANIMACIÓN EN AFTER EFFECTS -->
+        <h1 class="text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#ccc] mt-16" id="animation-after-effects-title">
+            ANIMACIÓN EN AFTER <span id="effects-word">EFFECTS</span>
+        </h1>
+
+        <section class="mt-16" id="animation-gallery-section">
+            <!-- Fila de 2 trabajos (16:9) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2.5">
+                <div class="gallery-item aspect-video">
+                    <img src="https://placehold.co/600x337/333/ccc?text=Trabajo+11" alt="Trabajo 11" class="w-full h-full object-cover">
+                </div>
+                <div class="gallery-item aspect-video" data-work-id="trabajo-12">
+                    <img src="https://placehold.co/600x337/333/ccc?text=Trabajo+12" alt="Trabajo 12" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Fila con 1 trabajo (16:9) -->
+            <div class="grid grid-cols-1 gap-2.5 mt-2.5">
+                <div class="gallery-item aspect-video">
+                    <!-- Vimeo Video Embed for Trabajo 13 -->
+                    <iframe src="https://player.vimeo.com/video/1084657182?h=b1a2a3a4a5" width="100%" height="100%" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Fila de 3 trabajos (16:9) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-2.5 mt-2.5">
+                <div class="gallery-item aspect-video">
+                    <img src="https://placehold.co/400x225/333/ccc?text=Trabajo+14" alt="Trabajo 14" class="w-full h-full object-cover">
+                </div>
+                <div class="gallery-item aspect-video">
+                    <img src="https://placehold.co/400x225/333/ccc?text=Trabajo+15" alt="Trabajo 15" class="w-full h-full object-cover">
+                </div>
+                <div class="gallery-item aspect-video">
+                    <img src="https://placehold.co/400x225/333/ccc?text=Trabajo+16" alt="Trabajo 16" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Frase "La animación capta la atención, fácil de entender y se queda en la memoria." -->
+            <p class="text-center text-lg md:text-xl lg:text-2xl font-light text-[#ccc] mt-8 mb-8 slide-fade-in-on-scroll" id="animation-phrase">
+                La animación capta la atención, es fácil de entender y se queda en la memoria.
+            </p>
+
+            <!-- Nueva fila con 1 trabajo (16:9) para Trabajo 17 -->
+            <div class="grid grid-cols-1 gap-2.5 mt-2.5">
+                <div class="gallery-item aspect-video">
+                    <img src="https://placehold.co/1200x675/333/ccc?text=Trabajo+17" alt="Trabajo 17" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+
+        <!-- Nueva sección: ILUSTRACIÓN DIGITAL -->
+        <h1 class="text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#ccc] mt-16 slide-fade-in-on-scroll" id="illustration-digital-title">
+            ILUSTRACIÓN DIGITAL
+        </h1>
+
+        <section class="mt-16" id="illustration-gallery-section">
+            <!-- Nueva fila de 3 trabajos verticales (4:5) -->
+            <div class="gallery-grid-section-3-cols grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-vertical">
+                    <img src="https://placehold.co/400x500/333/ccc?text=Trabajo+18" alt="Trabajo 18" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-vertical">
+                    <img src="https://placehold.co/400x500/333/ccc?text=Trabajo+26" alt="Trabajo 26" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-vertical">
+                    <img src="https://placehold.co/400x500/333/ccc?text=Trabajo+27" alt="Trabajo 27" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+
+        <!-- Nueva frase al final -->
+        <p class="text-center text-lg md:text-xl lg:text-2xl font-light text-[#ccc] mt-8 mb-8 slide-fade-in-on-scroll" id="style-phrase">
+            Estilo propio, vida y personalidad en tus piezas gráficas.
+        </p>
+
+        <!-- Nueva sección de 2 filas de 3 trabajos cuadrados -->
+        <section class="mt-8" id="illustration-gallery-section-2">
+            <div class="gallery-grid-section-3-cols grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-square">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+19" alt="Trabajo 19" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-square">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+20" alt="Trabajo 20" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-square">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+21" alt="Trabajo 21" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <div class="gallery-grid-section-3-cols grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-2.5">
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-square">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+22" alt="Trabajo 22" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-square hidden lg:block">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+23" alt="Trabajo 23" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-gray-700 overflow-hidden gallery-item aspect-square hidden lg:block" data-work-id="trabajo-24">
+                    <img src="https://placehold.co/400x400/333/ccc?text=Trabajo+24" alt="Trabajo 24" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <!-- Fila con 1 trabajo (16:9) - Trabajo 25 -->
+            <div class="grid grid-cols-1 gap-2.5 mt-2.5">
+                <div class="gallery-item aspect-video">
+                    <img src="https://placehold.co/1200x675/333/ccc?text=Trabajo+25" alt="Trabajo 25" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <!-- Nueva fila con 1 trabajo (16:9) - Trabajo 28 -->
+            <div class="grid grid-cols-1 gap-2.5 mt-2.5">
+                <div class="gallery-item aspect-video">
+                    <img src="https://placehold.co/1200x675/333/ccc?text=Trabajo+28" alt="Trabajo 28" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+
+        <!-- Nuevo título al final de todo -->
+        <h1 class="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-thin text-[#ccc] mt-64 slide-fade-in-on-scroll" id="final-call-to-action-title">
+            Trabajemos juntos en tu próximo proyecto
+        </h1>
+
+        <!-- Contenedor para los botones de contacto -->
+        <div class="flex flex-col sm:flex-row justify-center items-center mt-12 mb-16 gap-4">
+            <!-- Botón "Hablemos por whatsapp" -->
+            <a href="https://wa.me/56920115167?text=Hola%20Nicol%C3%A1s%2C%20tengo%20un%20proyecto%20que%20podr%C3%ADamos%20trabajar%20juntos" target="_blank" class="group px-6 py-3 border border-[#ccc] text-[#ccc] uppercase font-light rounded-full transition-all duration-300 ease-in-out hover:bg-[#ccc] hover:text-[#333] text-lg sm:text-xl">
+                Hablemos por whatsapp
+            </a>
+            <!-- Botón "Enviar un mail" -->
+            <button id="send-mail-button" class="group px-6 py-3 border border-[#ccc] text-[#ccc] uppercase font-light rounded-full transition-all duration-300 ease-in-out hover:bg-[#ccc] hover:text-[#333] text-lg sm:text-xl sm:ml-4">
+                Enviar un mail
+            </button>
+        </div>
+
+        <!-- Contenedor para el texto y el botón de copiar correo (inicialmente oculto) -->
+        <div id="email-contact-info" class="hidden flex flex-col items-center mt-8 mb-16 text-center">
+            <p class="text-lg md:text-xl lg:text-2xl font-light text-[#ccc] mb-4">
+                Cuéntame de qué se trata tu proyecto, enviando un correo a
+            </p>
+            <div id="copy-email-container" class="flex items-center justify-center cursor-pointer px-4 py-2 border border-[#ccc] text-[#ccc] rounded-full transition-all duration-300 ease-in-out hover:bg-[#ccc] hover:text-[#333]">
+                <span id="email-address" class="text-lg md:text-xl lg:text-2xl font-semibold">nicolasplazacontreras@gmail.com</span>
+                <span id="copied-feedback" class="text-lg md:text-xl lg:text-2xl font-semibold hidden absolute inset-0 flex items-center justify-center">¡Copiado!</span>
+            </div>
+        </div>
+
+        <!-- Contenedor para los enlaces a redes sociales -->
+        <div class="flex flex-col sm:flex-row justify-center items-center mt-24 mb-24 gap-4 text-lg sm:text-xl font-bold" id="social-links-container">
+            <a href="https://www.linkedin.com/in/nicolas-plaza-contreras-65bb1361/" target="_blank" class="social-link text-[#ccc] hover:text-white">
+                LINKEDIN
+            </a>
+            <span class="social-separator text-[#ccc] hidden sm:inline">|</span>
+            <a href="https://vimeo.com/nicolasplazacontreras" target="_blank" class="social-link text-[#ccc] hover:text-white">
+                VIMEO
+            </a>
+            <span class="social-separator text-[#ccc] hidden sm:inline">|</span>
+            <a href="https://www.behance.net/nicolasplaza" target="_blank" class="social-link text-[#ccc] hover:text-white">
+                BEHANCE
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Nuevas líneas de guía -->
+    <div id="effects-guide-line" class="guide-line"></div>
+    <div id="illustration-underline-line" class="guide-line"></div>
+    <div id="illustration-vertical-guide-line" class="guide-line"></div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-[#ccc] text-center py-8 mt-16 text-sm font-light">
+        NICOLÁS PLAZA CONTRERAS | DISEÑO GRÁFICO | ANIMACIÓN | ILUSTRACIÓN DIGITAL <br>Y ahora incursionando en el DISEÑO WEB, yo mismo hice este portafolio utilizando solamente la IA de Google </span>
+        <a href="https://gemini.google.com" target="_blank" class="inline-flex items-center text-[#ccc] hover:text-white transition-colors duration-300">
+            <svg class="inline-block w-4 h-4 align-middle mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 12l10 10 10-10z"/>
+            </svg>
+            <span class="font-bold">Gemini</span>
+        </a>
+    </footer>
+
+    <script>
+        // Get custom cursor and GIF elements
+        const customCursor = document.getElementById('custom-cursor');
+        const holaCircle = document.getElementById('hola-circle');
+        const gifFollower = document.getElementById('gif-follower');
+
+        // Get the green background circle element
+        const greenBackgroundCircle = document.getElementById('green-background-circle');
+
+        // Function to show the GIF
+        function showGif() {
+            gifFollower.style.opacity = '1';
+            gifFollower.style.transform = 'translate(-50%, -50%) scale(1)';
+        }
+
+        // Function to hide the GIF
+        function hideGif() {
+            gifFollower.style.transform = 'translate(-50%, -50%) scale(0)';
+            // Hide completely after the transition to prevent it from occupying invisible space
+            setTimeout(() => {
+                gifFollower.style.opacity = '0';
+            }, 300); // Matches CSS transition duration
+        }
+
+        // Apply listeners only to the greenBackgroundCircle element
+        if (greenBackgroundCircle) {
+            greenBackgroundCircle.addEventListener('mouseenter', showGif);
+            greenBackgroundCircle.addEventListener('mouseleave', hideGif);
+        }
+
+        // Track mouse position and update custom cursor and gradient circle
+        document.addEventListener('mousemove', (e) => {
+            // Position the center of the cross at the mouse coordinates
+            customCursor.style.left = `${e.clientX}px`;
+            customCursor.style.top = `${e.clientY}px`;
+
+            // Position the center of the gradient circle at the mouse coordinates
+            holaCircle.style.left = `${e.clientX}px`;
+            holaCircle.style.top = `${e.clientY}px`;
+
+            // Position the center of the GIF at the mouse coordinates
+            gifFollower.style.left = `${e.clientX}px`;
+            gifFollower.style.top = `${e.clientY}px`;
+        });
+
+        // Wait for the DOM to be fully loaded before executing the script
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Select only interactive word containers
+            const allWrappers = document.querySelectorAll('.glitch-word-wrapper-imagen, .glitch-word-wrapper-movimiento, .glitch-word-wrapper-estilo');
+            const defaultWordColor = '#ccc'; // Default word color (light gray)
+            const dimmedWordColor = '#666';    // Dimmed word color (dark gray)
+            const flashWhiteColor = 'white'; // White flash color
+            const flashDuration = 100; // White flash duration in milliseconds
+
+            // --- Typewriter effect logic for "HOLA" text ---
+            const typingTextElement = document.getElementById('typing-text');
+            const languages = ['HOLA', 'HELLO', 'BONJOUR', 'HALLO', 'こんにちは']; // Languages for the loop
+            let currentLanguageIndex = 0;
+            let charIndex = 0;
+            let typingInterval;
+            let eraseInterval;
+            let nextLanguageTimeout;
+
+            // Function to type text character by character
+            function typeWriterEffect(text, element, speed = 100) {
+                // Clear any previous interval or timeout to avoid conflicts
+                if (typingInterval) clearInterval(typingInterval);
+                if (eraseInterval) clearInterval(eraseInterval);
+                if (nextLanguageTimeout) clearTimeout(nextLanguageTimeout);
+
+                charIndex = 0;
+                element.textContent = ''; // Clear current text before typing
+
+                typingInterval = setInterval(() => {
+                    if (charIndex < text.length) {
+                        element.textContent += text.charAt(charIndex);
+                        charIndex++;
+                    } else {
+                        clearInterval(typingInterval); // Stop typing when finished
+                        // Schedule the start of the next language cycle after a pause
+                        // 2-second pause
+                        nextLanguageTimeout = setTimeout(startNextLanguageCycle, 2000);
+                    }
+                }, speed); // Typing speed (ms per character)
+            }
+
+            // Function to erase text character by character
+            function eraseTextEffect(element, speed = 50) {
+                // Clear any previous interval or timeout
+                if (typingInterval) clearInterval(typingInterval);
+                if (eraseInterval) clearInterval(eraseInterval);
+                if (nextLanguageTimeout) clearTimeout(nextLanguageTimeout);
+
+                eraseInterval = setInterval(() => {
+                    if (element.textContent.length > 0) {
+                        element.textContent = element.textContent.slice(0, -1); // Remove the last character
+                    } else {
+                        clearInterval(eraseInterval); // Stop erasing when text is empty
+                        // Move to the next language and start typing
+                        currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
+                        typeWriterEffect(languages[currentLanguageIndex], typingTextElement);
+                    }
+                }, speed); // Erasing speed (ms per character)
+            }
+
+            // Function to start the next language cycle (erase then type)
+            function startNextLanguageCycle() {
+                eraseTextEffect(typingTextElement);
+            }
+
+            // Start the typewriter effect with the first language on page load
+            typeWriterEffect(languages[currentLanguageIndex], typingTextElement);
+
+
+            // --- Character reveal and erase effect logic for the 3 words ---
+            function applyCharacterTransitionEffect(wrapperElement, originalWordText, finalWordText, transitionDelay) {
+                const originalSpan = wrapperElement.querySelector('.original-text');
+                const hoverSpan = wrapperElement.querySelector('.hover-text');
+                const charSpans = hoverSpan.querySelectorAll('.char'); // Select all character spans
+
+                let activeTimeouts = []; // Array to store IDs of all active timeouts
+
+                wrapperElement.addEventListener('mouseenter', () => {
+                    // Clear all active timeouts to prevent duplicate effects or errors
+                    activeTimeouts.forEach(clearTimeout);
+                    activeTimeouts = [];
+
+                    // Reset visual state of hover character spans
+                    charSpans.forEach(charSpan => {
+                        charSpan.style.opacity = '0'; // Hide all characters
+                        charSpan.classList.remove('flash-white'); // Ensure no flash
+                        charSpan.style.color = defaultWordColor; // Ensure hover chars are light gray
+                    });
+
+                    // Ensure both spans are initially visible for transition
+                    originalSpan.style.opacity = '1';
+                    originalSpan.style.pointerEvents = 'auto';
+                    hoverSpan.style.opacity = '1';
+                    hoverSpan.style.pointerEvents = 'auto';
+
+                    // Restore original span content
+                    originalSpan.textContent = originalWordText;
+
+                    // Current word maintains its light gray color
+                    originalSpan.style.color = defaultWordColor;
+                    hoverSpan.style.color = defaultWordColor; // For the container of individual chars
+
+                    // Dim other words
+                    allWrappers.forEach(otherWrapper => {
+                        if (otherWrapper !== wrapperElement) {
+                            otherWrapper.querySelector('.original-text').style.color = dimmedWordColor;
+                            otherWrapper.querySelector('.hover-text').style.color = dimmedWordColor;
+                            otherWrapper.querySelectorAll('.hover-text .char').forEach(char => {
+                                char.style.color = dimmedWordColor;
+                            });
+                        }
+                    });
+
+                    // Determine maximum length to ensure both processes (reveal and erase) finish
+                    const maxLength = Math.max(originalWordText.length, finalWordText.length);
+
+                    for (let i = 0; i < maxLength; i++) {
+                        // Calculate delay for current step (right to left)
+                        const currentStepDelay = i * transitionDelay;
+
+                        // --- REVEAL (finalWordText) ---
+                        // Get the character index from the left that corresponds to the current step from the right
+                        const revealCharIndex = finalWordText.length - 1 - i;
+                        if (revealCharIndex >= 0 && revealCharIndex < charSpans.length) {
+                            let revealTimeout = setTimeout(() => {
+                                const charSpan = charSpans[revealCharIndex]; // Select character from the right
+                                charSpan.style.opacity = '1'; // Make it visible
+                                charSpan.classList.add('flash-white'); // Add white flash
+
+                                // Schedule removal of 'flash-white' class after flash duration
+                                activeTimeouts.push(setTimeout(() => {
+                                    charSpan.classList.remove('flash-white');
+                                }, flashDuration));
+                            }, currentStepDelay); // Apply calculated delay
+                            activeTimeouts.push(revealTimeout);
+                        }
+
+                        // --- ERASE (originalWordText) ---
+                        // Get the character index from the left that corresponds to the current step from the right
+                        const eraseCharIndex = originalWordText.length - 1 - i;
+                        if (eraseCharIndex >= 0 && eraseCharIndex < originalWordText.length) {
+                            let eraseTimeout = setTimeout(() => {
+                                let currentOriginalText = originalSpan.textContent;
+                                // Replace current character with a non-breaking space (\u00A0)
+                                // to maintain visual width of the original word while "erasing".
+                                let newOriginalText = currentOriginalText.substring(0, eraseCharIndex) + '\u00A0' + currentOriginalText.substring(eraseCharIndex + 1);
+                                originalSpan.textContent = newOriginalText;
+                            }, currentStepDelay); // Apply the same calculated delay
+                            activeTimeouts.push(eraseTimeout);
+                        }
+                    }
+
+                    // Schedule a final action to ensure correct state after all transitions
+                    let finalStateTimeout = setTimeout(() => {
+                        originalSpan.style.opacity = '0'; // Completely hide original word
+                        originalSpan.style.pointerEvents = 'none'; // Disable its events
+                        // Ensure all hover characters are visible and without flash
+                        charSpans.forEach(charSpan => {
+                            charSpan.style.opacity = '1';
+                            charSpan.classList.remove('flash-white');
+                            charSpan.style.color = defaultWordColor; // Ensure they remain light gray
+                        });
+                    }, maxLength * transitionDelay + flashDuration + 50); // Adjust final delay with new delay
+                    activeTimeouts.push(finalStateTimeout);
+                });
+
+                wrapperElement.addEventListener('mouseleave', () => {
+                    // Stop all active timeouts to revert the effect
+                    activeTimeouts.forEach(clearTimeout);
+                    activeTimeouts = [];
+
+                    // Reset spans to original state
+                    originalSpan.style.opacity = '1';
+                    originalSpan.style.pointerEvents = 'auto';
+                    hoverSpan.style.opacity = '0';
+                    hoverSpan.style.pointerEvents = 'none';
+                    originalSpan.textContent = originalWordText; // Restore original word
+
+                    // Restore current word color to light gray
+                    originalSpan.style.color = defaultWordColor;
+                    hoverSpan.style.color = defaultWordColor;
+
+                    // Restore all words to light gray
+                    allWrappers.forEach(otherWrapper => {
+                        otherWrapper.querySelector('.original-text').style.color = defaultWordColor;
+                        otherWrapper.querySelector('.hover-text').style.color = defaultWordColor;
+                        otherWrapper.querySelectorAll('.hover-text .char').forEach(char => {
+                            char.style.color = dimmedWordColor;
+                        });
+                    });
+
+                    // Hide all hover characters and ensure no flash
+                    charSpans.forEach(charSpan => {
+                        charSpan.style.opacity = '0';
+                        charSpan.classList.remove('flash-white');
+                    });
+                });
+            }
+
+            // Apply effect to interactive words
+            applyCharacterTransitionEffect(document.querySelector('.glitch-word-wrapper-imagen'), 'IMAGEN', 'DISEÑO GRÁFICO', 40);
+            applyCharacterTransitionEffect(document.querySelector('.glitch-word-wrapper-movimiento'), 'MOVIMIENTO', 'ANIMACIÓN EN AFTER EFFECTS', 40);
+            applyCharacterTransitionEffect(document.querySelector('.glitch-word-wrapper-estilo'), 'ESTILO', 'ILUSTRACIÓN DIGITAL', 40);
+
+            // --- Scroll-triggered animation logic for description and guides ---
+            const descriptionParagraph = document.getElementById('description-paragraph');
+            const holaTextContainer = document.getElementById('hola-text-container');
+            const horizontalLine = document.getElementById('horizontal-guide-line');
+            const verticalLine = document.getElementById('vertical-guide-line');
+            const imagenWrapper = document.querySelector('.glitch-word-wrapper-imagen');
+            const mainContainer = document.querySelector('.container');
+            const profileImageContainer = document.getElementById('profile-image-container'); // Get profile picture container
+            const profileToImageLine = document.getElementById('profile-to-image-line'); // New guide line
+            const designGraphicTitleBottom = document.getElementById('design-graphic-title-bottom'); // New title at the end
+            const effectsWord = document.getElementById('effects-word'); // New reference for EFFECTS word
+            const effectsGuideLine = document.getElementById('effects-guide-line'); // New reference for EFFECTS line
+            const communicationPhrase = document.getElementById('communication-phrase'); // New reference for communication phrase
+            const animationPhrase = document.getElementById('animation-phrase'); // New reference for animation phrase
+            const illustrationDigitalTitle = document.getElementById('illustration-digital-title'); // New reference for digital illustration title
+            const stylePhrase = document.getElementById('style-phrase'); // New reference for style phrase
+            const finalCallToActionTitle = document.getElementById('final-call-to-action-title'); // New final title
+
+            // New guide lines
+            const illustrationUnderlineLine = document.getElementById('illustration-underline-line');
+            const illustrationVerticalGuideLine = document.getElementById('illustration-vertical-guide-line');
+
+            // Work elements for line reference
+            const trabajo6 = document.querySelector('[data-work-id="trabajo-6"]');
+            const trabajo12 = document.querySelector('[data-work-id="trabajo-12"]'); // Reference for work 12
+            const trabajo13 = document.querySelector('[data-work-id="trabajo-13"]');
+            const trabajo24 = document.querySelector('[data-work-id="trabajo-24"]');
+
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // When paragraph is visible, add class to activate animation
+                        entry.target.classList.add('is-visible');
+
+                        // Add a small delay to ensure the paragraph has its final height
+                        setTimeout(() => {
+                            // Calculate and position guide lines
+                            const holaRect = holaTextContainer.getBoundingClientRect();
+                            const descRect = descriptionParagraph.getBoundingClientRect();
+                            // Only calculate glitchImageRect if it's visible (for desktop)
+                            let glitchImageRect = { right: 0, top: 0 };
+                            if (window.innerWidth >= 1024 && imagenWrapper) { // Check for large screens and if element exists
+                                glitchImageRect = imagenWrapper.getBoundingClientRect();
+                            }
+                            const containerRect = mainContainer.getBoundingClientRect();
+                            const profileImageRect = profileImageContainer.getBoundingClientRect(); // Get profile picture dimensions
+                            const designGraphicRect = designGraphicTitleBottom.getBoundingClientRect(); // Get new title dimensions
+                            const effectsWordRect = effectsWord.getBoundingClientRect(); // Get EFFECTS word dimensions
+                            const illustrationDigitalTitleRect = illustrationDigitalTitle.getBoundingClientRect(); // Get illustration title dimensions
+
+                            // Position horizontal line
+                            horizontalLine.style.top = `${(holaRect.bottom + descRect.top) / 2 - containerRect.top}px`;
+                            horizontalLine.style.left = `0px`; // Relative to main container
+                            horizontalLine.style.width = `100%`; // Occupy full container width
+
+                            // Posicionamiento de la línea vertical
+                            /* Ajustar 'left' para que esté a la derecha de "IMAGEN"
+                            El +20 es un offset para que no esté pegado al texto */
+                            if (window.innerWidth >= 1024) { // Only show on desktop
+                                verticalLine.style.left = `${glitchImageRect.right - containerRect.left + 20}px`;
+                                verticalLine.style.top = `${glitchImageRect.top - containerRect.top}px`;
+                                // Calcular la altura desde la parte superior de "IMAGEN" hasta la parte inferior de la descripción
+                                const verticalLineHeight = descRect.bottom - glitchImageRect.top;
+                                verticalLine.style.setProperty('--vertical-line-height', `${verticalLineHeight}px`);
+                                verticalLine.classList.add('is-drawn'); // Activate line drawing
+                            } else {
+                                verticalLine.classList.remove('is-drawn'); // Hide on mobile
+                            }
+
+
+                            // Posicionamiento de la nueva línea vertical desde la línea horizontal entre "HOLA" y la descripción
+                            const horizontalLineTop = (holaRect.bottom + descRect.top) / 2;
+                            // La línea empieza 20px a la izquierda del borde izquierdo de la foto de perfil
+                            profileToImageLine.style.left = `${profileImageRect.left - containerRect.left - 20}px`;
+                            // La línea empieza desde la posición vertical de la línea horizontal entre hola y descripción
+                            profileToImageLine.style.top = `${horizontalLineTop - containerRect.top}px`;
+                            // Calcular la altura desde la línea horizontal hasta la base del título "DISEÑO GRÁFICO"
+                            const profileLineHeight = designGraphicRect.bottom - horizontalLineTop;
+                            profileToImageLine.style.setProperty('--profile-line-height', `${profileLineHeight}px`);
+
+                            // Posicionamiento de la nueva línea horizontal desde "EFFECTS"
+                            effectsGuideLine.style.top = `${effectsWordRect.bottom - containerRect.top}px`;
+                            effectsGuideLine.style.left = `${effectsWordRect.right - containerRect.left}px`;
+                            // Calcular el ancho para que llegue al borde derecho del contenedor
+                            const effectsLineWidth = containerRect.width - (effectsWordRect.right - containerRect.left);
+                            effectsGuideLine.style.setProperty('--effects-line-width', `${effectsLineWidth}px`);
+
+                            // Position illustration underline line
+                            illustrationUnderlineLine.style.top = `${illustrationDigitalTitleRect.bottom - containerRect.top}px`;
+                            illustrationUnderlineLine.style.left = `${illustrationDigitalTitleRect.left - containerRect.left}px`;
+                            const illustrationUnderlineLineWidth = containerRect.width - (illustrationDigitalTitleRect.left - containerRect.left);
+                            illustrationUnderlineLine.style.setProperty('--illustration-underline-width', `${illustrationUnderlineLineWidth}px`);
+
+                            // Position new vertical illustration line
+                            if (trabajo24) {
+                                const trabajo24Rect = trabajo24.getBoundingClientRect();
+                                const illustrationGallerySection = document.getElementById('illustration-gallery-section');
+                                const illustrationGalleryRect = illustrationGallerySection.getBoundingClientRect();
+
+                                illustrationVerticalGuideLine.style.left = `${illustrationGalleryRect.right - containerRect.left + 20}px`;
+                                illustrationVerticalGuideLine.style.top = `${illustrationUnderlineLine.offsetTop}px`; // Starts from underline
+                                const illustrationVerticalHeight = (trabajo24Rect.top + trabajo24Rect.height / 2) - illustrationUnderlineLine.offsetTop;
+                                illustrationVerticalGuideLine.style.setProperty('--illustration-vertical-height', `${illustrationVerticalHeight}px`);
+                            }
+
+                            // Activate line drawing
+                            horizontalLine.classList.add('is-drawn');
+                            profileToImageLine.classList.add('is-drawn'); // Activate new line
+                            effectsGuideLine.classList.add('is-drawn'); // Activate EFFECTS line
+                            illustrationUnderlineLine.classList.add('is-drawn'); // Activate illustration underline line
+                            illustrationVerticalGuideLine.classList.add('is-drawn'); // Activate new vertical illustration line
+
+                        }, 100); // 100ms delay
+
+                        observer.unobserve(entry.target); // Stop observing once activated
+                    }
+                });
+            }, {
+                threshold: 0.1 // Element activates when 10% of its area is visible
+            });
+
+            if (descriptionParagraph) {
+                observer.observe(descriptionParagraph);
+            }
+            if (communicationPhrase) { // Also observe new phrase
+                observer.observe(communicationPhrase);
+            }
+            if (animationPhrase) { // Also observe new animation phrase
+                observer.observe(animationPhrase);
+            }
+            if (illustrationDigitalTitle) { // Also observe new digital illustration title
+                observer.observe(illustrationDigitalTitle);
+            }
+            if (stylePhrase) { // Also observe new style phrase
+                observer.observe(stylePhrase);
+            }
+            if (finalCallToActionTitle) { // Observe new final title
+                observer.observe(finalCallToActionTitle);
+            }
+        });
+
+        // --- Scroll functionality when clicking "IMAGEN", "MOVIMIENTO", "ESTILO" ---
+        const imagenButton = document.querySelector('.glitch-word-wrapper-imagen');
+        const movimientoButton = document.querySelector('.glitch-word-wrapper-movimiento');
+        const estiloButton = document.querySelector('.glitch-word-wrapper-estilo');
+
+        const designGraphicSection = document.getElementById('design-graphic-title-bottom');
+        const animationAfterEffectsSection = document.getElementById('animation-after-effects-title');
+        const illustrationDigitalSection = document.getElementById('illustration-digital-title');
+
+        if (imagenButton && designGraphicSection) {
+            imagenButton.addEventListener('click', () => {
+                designGraphicSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+        if (movimientoButton && animationAfterEffectsSection) {
+            movimientoButton.addEventListener('click', () => {
+                animationAfterEffectsSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+        if (estiloButton && illustrationDigitalSection) {
+            estiloButton.addEventListener('click', () => {
+                illustrationDigitalSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+
+
+        // --- Gallery entry animation functionality ---
+        // Select all sections containing gallery elements
+        const gallerySections = document.querySelectorAll('section[id$="-gallery-section"], section[id$="-gallery-section-2"]');
+
+        gallerySections.forEach(section => {
+            const galleryItemsInSection = section.querySelectorAll('.gallery-item, .item-wide-rectangle');
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const index = Array.from(galleryItemsInSection).indexOf(entry.target);
+                        // Apply staggered delay for each element within this section
+                        entry.target.style.transitionDelay = `${index * 0.1}s`; // 100ms delay per element
+                        entry.target.classList.add('is-visible-gallery');
+                        observer.unobserve(entry.target); // Stop observing once element is visible
+                    }
+                });
+            }, {
+                threshold: 0.2 // Element is considered visible when 20% of its area is in the viewport
+            });
+
+            galleryItemsInSection.forEach(item => {
+                sectionObserver.observe(item);
+            });
+        });
+
+
+        // --- "Send email" button and email copy functionality ---
+        const sendMailButton = document.getElementById('send-mail-button');
+        const emailContactInfo = document.getElementById('email-contact-info');
+        const copyEmailContainer = document.getElementById('copy-email-container');
+        const emailAddressSpan = document.getElementById('email-address');
+        const copiedFeedbackSpan = document.getElementById('copied-feedback');
+        const emailToCopy = "nicolasplazacontreras@gmail.com";
+
+        if (sendMailButton && emailContactInfo && copyEmailContainer && emailAddressSpan && copiedFeedbackSpan) {
+            sendMailButton.addEventListener('click', () => {
+                // Show email contact info container
+                emailContactInfo.classList.remove('hidden');
+            });
+
+            copyEmailContainer.addEventListener('click', () => {
+                // Create a temporary textarea element to copy
+                const tempInput = document.createElement('textarea');
+                tempInput.value = emailToCopy;
+                document.body.appendChild(tempInput);
+                tempInput.select(); // Select text within input
+                document.execCommand('copy'); // Execute copy command
+                document.body.removeChild(tempInput); // Remove temporary input
+
+                // Show "Copied!" feedback
+                emailAddressSpan.classList.add('hidden');
+                copiedFeedbackSpan.classList.remove('hidden');
+
+                // Revert to original state after a short time
+                setTimeout(() => {
+                    copiedFeedbackSpan.classList.add('hidden');
+                    emailAddressSpan.classList.remove('hidden');
+                }, 2000); // 2 seconds
+            });
+        }
+
+        // --- Social links dimming effect logic ---
+        const socialLinksContainer = document.getElementById('social-links-container');
+        if (socialLinksContainer) {
+            const socialLinks = socialLinksContainer.querySelectorAll('.social-link');
+            const socialSeparators = socialLinksContainer.querySelectorAll('.social-separator');
+            const defaultSocialColor = '#ccc';
+            const dimmedSocialColor = '#666';
+
+            socialLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    socialLinks.forEach(otherLink => {
+                        if (otherLink !== link) {
+                            otherLink.style.color = dimmedSocialColor;
+                        } else {
+                            otherLink.style.color = 'white'; // Hovered link turns white
+                        }
+                    });
+                    socialSeparators.forEach(separator => {
+                        separator.style.color = dimmedSocialColor;
+                    });
+                });
+
+                link.addEventListener('mouseleave', () => {
+                    socialLinks.forEach(otherLink => {
+                        otherLink.style.color = defaultSocialColor;
+                    });
+                    socialSeparators.forEach(separator => {
+                        separator.style.color = defaultSocialColor;
+                    });
+                });
+            });
+        }
+
+        // --- "Read More/Less" and "Contact Me" functionality for description ---
+        const readMoreButton = document.getElementById('read-more-button');
+        const readLessContactContainer = document.getElementById('read-less-contact-container'); // Container for "Less" and "Contact Me"
+        const hiddenDescriptionParagraph = document.getElementById('hidden-description-paragraph');
+        const hiddenDescriptionParagraph2 = document.getElementById('hidden-description-paragraph-2');
+        const contactMeScrollButton = document.getElementById('contact-me-scroll-button'); // New scroll button
+
+        if (readMoreButton && readLessContactContainer && hiddenDescriptionParagraph && hiddenDescriptionParagraph2 && contactMeScrollButton) {
+            readMoreButton.addEventListener('click', () => {
+                hiddenDescriptionParagraph.classList.remove('hidden');
+                hiddenDescriptionParagraph2.classList.remove('hidden');
+                readLessContactContainer.classList.remove('hidden'); // Show button container
+                readMoreButton.classList.add('hidden');
+            });
+
+            readLessContactContainer.querySelector('#read-less-button').addEventListener('click', () => {
+                hiddenDescriptionParagraph.classList.add('hidden');
+                hiddenDescriptionParagraph2.classList.add('hidden');
+                readLessContactContainer.classList.add('hidden'); // Hide button container
+                readMoreButton.classList.remove('hidden');
+            });
+
+            contactMeScrollButton.addEventListener('click', () => {
+                const finalCallToActionTitle = document.getElementById('final-call-to-action-title');
+                if (finalCallToActionTitle) {
+                    finalCallToActionTitle.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
